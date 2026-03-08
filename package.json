@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "build": "mastra build",
+    "build": "mastra build && node scripts/sanitize-wrangler.mjs",
     "start": "mastra start"
   },
   "keywords": [],
@@ -18,9 +18,10 @@
     "node": ">=22.13.0"
   },
   "dependencies": {
+    "@mastra/cloudflare-d1": "^1.0.1",
     "@mastra/core": "^1.10.0",
+    "@mastra/deployer-cloudflare": "^1.1.7",
     "@mastra/evals": "^1.1.2",
-    "@mastra/libsql": "^1.6.4",
     "@mastra/loggers": "^1.0.2",
     "@mastra/memory": "^1.6.1",
     "@mastra/observability": "^1.3.1",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/node": "^25.3.5",
     "mastra": "^1.3.7",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.71.0"
   }
 }

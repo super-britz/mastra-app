@@ -1,38 +1,41 @@
 
 import { Mastra } from '@mastra/core/mastra';
+import { D1Store } from '@mastra/cloudflare-d1';
+import { CloudflareDeployer } from '@mastra/deployer-cloudflare';
 import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
-import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } from '@mastra/observability';
 import { weatherWorkflow } from './workflows/weather-workflow';
 import { dictionaryAgent } from './agents/dictionary-agent';
 import { weatherAgent } from './agents/weather-agent';
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
 
+function createStorage() {
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+  const databaseId = process.env.CLOUDFLARE_D1_DATABASE_ID;
+
+  if (accountId && apiToken && databaseId) {
+    return new D1Store({
+      id: 'mastra-d1-storage',
+      accountId,
+      apiToken,
+      databaseId,
+      tablePrefix: 'mastra_',
+    });
+  }
+
+  return undefined;
+}
+
 export const mastra = new Mastra({
+  deployer: new CloudflareDeployer({
+    name: 'mastra-app',
+  }),
   workflows: { weatherWorkflow },
   agents: { weatherAgent, dictionaryAgent },
   scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
-  storage: new LibSQLStore({
-    id: "mastra-storage",
-    // stores observability, scores, ... into persistent file storage
-    url: "file:./mastra.db",
-  }),
+  storage: createStorage(),
   logger: new PinoLogger({
     name: 'Mastra',
     level: 'info',
-  }),
-  observability: new Observability({
-    configs: {
-      default: {
-        serviceName: 'mastra',
-        exporters: [
-          new DefaultExporter(), // Persists traces to storage for Mastra Studio
-          new CloudExporter(), // Sends traces to Mastra Cloud (if MASTRA_CLOUD_ACCESS_TOKEN is set)
-        ],
-        spanOutputProcessors: [
-          new SensitiveDataFilter(), // Redacts sensitive data like passwords, tokens, keys
-        ],
-      },
-    },
   }),
 });
