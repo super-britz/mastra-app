@@ -18,6 +18,9 @@ interface WeatherResponse {
     wind_gusts_10m: number;
     weather_code: number;
   };
+  timezone: string;
+  timezone_abbreviation: string;
+  utc_offset_seconds: number;
 }
 
 export const weatherTool = createTool({
@@ -34,6 +37,10 @@ export const weatherTool = createTool({
     windGust: z.number(),
     conditions: z.string(),
     location: z.string(),
+    observedAt: z.string(),
+    timezone: z.string(),
+    timezoneAbbreviation: z.string(),
+    utcOffsetSeconds: z.number(),
   }),
   execute: async (inputData) => {
     return await getWeather(inputData.location);
@@ -51,7 +58,7 @@ const getWeather = async (location: string) => {
 
   const { latitude, longitude, name } = geocodingData.results[0];
 
-  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code`;
+  const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code&timezone=auto`;
 
   const response = await fetch(weatherUrl);
   const data = (await response.json()) as WeatherResponse;
@@ -64,6 +71,10 @@ const getWeather = async (location: string) => {
     windGust: data.current.wind_gusts_10m,
     conditions: getWeatherCondition(data.current.weather_code),
     location: name,
+    observedAt: data.current.time,
+    timezone: data.timezone,
+    timezoneAbbreviation: data.timezone_abbreviation,
+    utcOffsetSeconds: data.utc_offset_seconds,
   };
 };
 
