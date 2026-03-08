@@ -79,7 +79,9 @@ export const dictionaryTool = createTool({
       phonetic,
       syllabifiedPhonetic,
       syllableCount,
-      syllableSplitSource: syllabifiedPhonetic ? 'provided' : 'unavailable',
+      syllableSplitSource: syllabifiedPhonetic
+        ? ('provided' as const)
+        : ('unavailable' as const),
       meanings: entry.meanings
         .filter(meaning => meaning.partOfSpeech && meaning.definitions?.length)
         .slice(0, 3)

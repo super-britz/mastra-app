@@ -1,7 +1,7 @@
-/* This file was auto-generated through Mastra. Edit the CloudflareDeployer() instance directly. */
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "mastra-app",
+  "main": "./src/worker.ts",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": [
     "nodejs_compat",
@@ -9,12 +9,7 @@
   ],
   "observability": {
     "logs": {
-      "enabled": true
+      "enabled": false
     }
-  },
-  "main": "./.mastra/output/index.mjs",
-  "alias": {
-    "typescript": "./.mastra/output/typescript-stub.mjs",
-    "execa": "./.mastra/output/execa-stub.mjs"
   }
 }

@@ -1,5 +1,4 @@
 import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
 import { modelId } from '../config/model';
 import { dictionaryTool } from '../tools/dictionary-tool';
 
@@ -38,5 +37,4 @@ export const dictionaryAgent = new Agent({
 `,
   model: modelId,
   tools: { dictionaryTool },
-  memory: new Memory(),
 });
